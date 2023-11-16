@@ -1,0 +1,43 @@
+def is_valid_assignment(digits, mapping):
+    # Check for duplicate values in the mapping
+    for value in mapping.values():
+        if value in mapping:
+            return False
+
+    # Check if the resulting numbers are valid
+    for word in words:
+        number = 0
+        for char in word:
+            number = number * 10 + mapping[char]
+
+        if number < 0 or number >= 10:
+            return False
+
+    return True
+
+def solve_cryptarithmetic(words, mapping):
+    if len(words) == 0:
+        # Base case: All words have been assigned a unique digit
+        print(mapping)
+        return True
+
+    current_word = words[0]
+
+    for digit in range(10):
+        # Check if the digit is not already assigned and does not lead to an invalid number
+        if digit not in mapping and is_valid_assignment(words[1:], {**mapping, **{current_word[0]: digit}}):
+            # Recursively solve with the current digit assigned to the first character of the current word
+            if solve_cryptarithmetic(words[1:], {**mapping, **{current_word[0]: digit}}):
+                return True
+
+    # No valid assignment found for the first character of the current word
+    return False
+
+if __name__ == "__main__":
+    words = list(input("Enter the cryptarithmetic equation: ").split())
+    mapping = {}
+
+    if solve_cryptarithmetic(words, mapping):
+        print("Solution found!")
+    else:
+        print("No solution exists.")
