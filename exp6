@@ -1,0 +1,45 @@
+class VacuumCleaner:
+    def __init__(self, environment):
+        self.environment = environment
+        self.position = 0
+
+    def move(self, direction):
+        if direction == 'left':
+            self.position -= 1
+        elif direction == 'right':
+            self.position += 1
+        else:
+            raise ValueError('Invalid direction')
+
+        if self.position < 0 or self.position >= len(self.environment):
+            raise ValueError('Invalid position')
+
+    def suck(self):
+        if self.environment[self.position] == 'dirty':
+            self.environment[self.position] = 'clean'
+
+    def is_dirty(self):
+        return self.environment[self.position] == 'dirty'
+
+    def get_position(self):
+        return self.position
+
+def simulate(environment, vacuum_cleaner):
+    while True:
+        if not any(is_dirty for is_dirty in environment):
+            break
+
+        if vacuum_cleaner.is_dirty():
+            vacuum_cleaner.suck()
+        else:
+            if vacuum_cleaner.get_position() < len(environment) - 1:
+                vacuum_cleaner.move('right')
+            else:
+                vacuum_cleaner.move('left')
+
+environment = ['dirty', 'dirty', 'clean', 'dirty', 'clean']
+vacuum_cleaner = VacuumCleaner(environment)
+
+simulate(environment, vacuum_cleaner)
+
+print(environment)
