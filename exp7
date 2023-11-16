@@ -1,0 +1,27 @@
+def bfs(graph, start):
+    visited = {}
+    queue = [start]
+
+    while queue:
+        current_node = queue.pop(0)
+        visited[current_node] = True
+
+        for neighbor in graph[current_node]:
+            if neighbor not in visited:
+                queue.append(neighbor)
+
+    return visited
+
+if __name__ == "__main__":
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['D', 'E'],
+        'C': ['F'],
+        'D': [],
+        'E': ['F'],
+        'F': []
+    }
+
+    start_node = 'A'
+    visited_nodes = bfs(graph, start_node)
+    print(visited_nodes)
