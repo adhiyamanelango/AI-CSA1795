@@ -1,0 +1,68 @@
+import networkx as nx
+
+def calculate_tour_length(graph, tour):
+    total_distance = 0
+    for i in range(len(tour) - 1):
+        start_node = tour[i]
+        end_node = tour[i + 1]
+        edge_weight = graph.edges[start_node, end_node]['weight']
+        total_distance += edge_weight
+    return total_distance
+
+def tsp_brute_force(graph):
+    shortest_tour = None
+    shortest_distance = float('inf')
+
+    for permutation in permutations(graph.nodes()):
+        tour_length = calculate_tour_length(graph, permutation)
+        if tour_length < shortest_distance:
+            shortest_distance = tour_length
+            shortest_tour = permutation
+
+    return shortest_tour, shortest_distance
+
+def tsp_greedy(graph):
+    start_node = random.choice(list(graph.nodes()))
+    current_node = start_node
+    unvisited_nodes = set(graph.nodes())
+    unvisited_nodes.remove(start_node)
+
+    tour = [start_node]
+    while unvisited_nodes:
+        min_distance = float('inf')
+        next_node = None
+        for neighbor in graph.neighbors(current_node):
+            if neighbor in unvisited_nodes:
+                distance = graph.edges[current_node, neighbor]['weight']
+                if distance < min_distance:
+                    min_distance = distance
+                    next_node = neighbor
+
+        current_node = next_node
+        unvisited_nodes.remove(next_node)
+        tour.append(next_node)
+
+    tour.append(start_node)  # Return to the starting node
+    return tour
+
+if __name__ == "__main__":
+    # Create a graph with edge weights representing distances
+    graph = nx.Graph()
+    graph.add_edge('A', 'B', weight=10)
+    graph.add_edge('A', 'C', weight=15)
+    graph.add_edge('B', 'D', weight=20)
+    graph.add_edge('C', 'D', weight=25)
+    graph.add_edge('C', 'E', weight=30)
+    graph.add_edge('D', 'E', weight=35)
+    graph.add_edge('E', 'F', weight=40)
+
+    # Solve the TSP using brute force
+    shortest_tour, shortest_distance = tsp_brute_force(graph)
+    print("Shortest tour using brute force:", shortest_tour)
+    print("Shortest distance using brute force:", shortest_distance)
+
+    # Solve the TSP using a greedy algorithm
+    greedy_tour = tsp_greedy(graph)
+    greedy_distance = calculate_tour_length(graph, greedy_tour)
+    print("Greedy tour:", greedy_tour)
+    print("Greedy distance:", greedy_distance)
