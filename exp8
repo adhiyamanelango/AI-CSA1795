@@ -1,0 +1,27 @@
+def dfs(graph, start):
+    visited = {}
+    stack = [start]
+
+    while stack:
+        current_node = stack.pop()
+        visited[current_node] = True
+
+        for neighbor in graph[current_node]:
+            if neighbor not in visited:
+                stack.append(neighbor)
+
+    return visited
+
+if __name__ == "__main__":
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['D', 'E'],
+        'C': ['F'],
+        'D': [],
+        'E': ['F'],
+        'F': []
+    }
+
+    start_node = 'A'
+    visited_nodes = dfs(graph, start_node)
+    print(visited_nodes)
