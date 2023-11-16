@@ -1,0 +1,78 @@
+def is_valid_state(missionaries, cannibals, boat):
+    # Ensure the number of missionaries on both sides of the river doesn't exceed the total number of missionaries
+    if missionaries[1] > missionaries[0] or missionaries[1] + cannibals[1] > missionaries[0] + cannibals[0]:
+        return False
+
+    # Ensure the number of cannibals on either side of the river doesn't exceed the total number of cannibals
+    if cannibals[1] > cannibals[0] or cannibals[1] > missionaries[1]:
+        return False
+
+    return True
+
+def bfs(missionaries, cannibals, boat):
+    # Initialize the queue and visited states dictionary
+    queue = [(missionaries, cannibals, boat)]
+    visited_states = {}
+
+    while queue:
+        # Get the current state from the queue
+        current_state = queue.pop(0)
+
+        # Check if the goal state has been reached
+        if current_state[0] == 0 and current_state[2] == 'right':
+            return True
+
+        # Mark the current state as visited
+        visited_states[current_state] = True
+
+        # Generate all possible valid next states
+        next_states = generate_next_states(current_state)
+
+        for next_state in next_states:
+            # Check if the new state has not been visited and is valid
+            if next_state not in visited_states and is_valid_state(next_state[0], next_state[1], next_state[2]):
+                # Add the new state to the queue
+                queue.append(next_state)
+
+    # If no solution is found, return False
+    return False
+
+def generate_next_states(current_state):
+    missionaries, cannibals, boat = current_state
+
+    next_states = []
+
+    # Move 1 missionary
+    if boat == 'left' and missionaries[0] > 0:
+        next_states.append((missionaries[0] - 1, cannibals[0], 'right'))
+
+    # Move 2 missionaries
+    if boat == 'left' and missionaries[0] > 1:
+        next_states.append((missionaries[0] - 2, cannibals[0], 'right'))
+
+    # Move 1 cannibal
+    if boat == 'left' and cannibals[0] > 0:
+        next_states.append((missionaries[0], cannibals[0] - 1, 'right'))
+
+    # Move 2 cannibals
+    if boat == 'left' and cannibals[0] > 1:
+        next_states.append((missionaries[0], cannibals[0] - 2, 'right'))
+
+    # Move 1 missionary and 1 cannibal
+    if boat == 'left' and missionaries[0] > 0 and cannibals[0] > 0:
+        next_states.append((missionaries[0] - 1, cannibals[0] - 1, 'right'))
+
+    # Move the boat back
+    if boat == 'right':
+        next_states.append((missionaries[1], cannibals[1], 'left'))
+
+    return next_states
+
+if __name__ == "__main__":
+    # Initial state: 3 missionaries and 3 cannibals on the left side, boat on the left side
+    initial_state = ([3, 0], [3, 0], 'left')
+
+    if bfs(initial_state):
+        print("Solution found!")
+    else:
+        print("No solution exists.")
