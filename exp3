@@ -1,0 +1,66 @@
+def bfs(jug1_cap, jug2_cap, target):
+    # Create a dictionary to store visited states
+    visited = {}
+
+    # Create a queue to store states to explore
+    queue = [(0, 0)]  # (jug1, jug2)
+
+    while queue:
+        # Get the first state from the queue
+        jug1, jug2 = queue.pop(0)
+
+        # Check if the target has been reached
+        if jug1 == target:
+            return True
+
+        # Mark the current state as visited
+        visited[(jug1, jug2)] = True
+
+        # Generate all possible states from the current state
+        for action in ['fill1', 'fill2', 'empty1', 'empty2', 'pour1to2', 'pour2to1']:
+            new_jug1, new_jug2 = apply_action(jug1, jug2, jug1_cap, jug2_cap, action)
+
+            # Check if the new state has not been visited and is valid
+            if not visited.get((new_jug1, new_jug2)) and valid_state(new_jug1, new_jug2, jug1_cap, jug2_cap):
+                # Add the new state to the queue
+                queue.append((new_jug1, new_jug2))
+
+    # If no solution is found, return False
+    return False
+
+def apply_action(jug1, jug2, jug1_cap, jug2_cap, action):
+    if action == 'fill1':
+        new_jug1 = jug1_cap
+        new_jug2 = jug2
+    elif action == 'fill2':
+        new_jug1 = jug1
+        new_jug2 = jug2_cap
+    elif action == 'empty1':
+        new_jug1 = 0
+        new_jug2 = jug2
+    elif action == 'empty2':
+        new_jug1 = jug1
+        new_jug2 = 0
+    elif action == 'pour1to2':
+        amount = min(jug1, jug2_cap - jug2)
+        new_jug1 = jug1 - amount
+        new_jug2 = jug2 + amount
+    elif action == 'pour2to1':
+        amount = min(jug2, jug1_cap - jug1)
+        new_jug1 = jug1 + amount
+        new_jug2 = jug2 - amount
+
+    return new_jug1, new_jug2
+
+def valid_state(jug1, jug2, jug1_cap, jug2_cap):
+    return 0 <= jug1 <= jug1_cap and 0 <= jug2 <= jug2_cap
+
+if __name__ == '__main__':
+    jug1_cap = int(input("Enter capacity of jug 1: "))
+    jug2_cap = int(input("Enter capacity of jug 2: "))
+    target = int(input("Enter target amount: "))
+
+    if bfs(jug1_cap, jug2_cap, target):
+        print("Solution found!")
+    else:
+        print("No solution exists.")
